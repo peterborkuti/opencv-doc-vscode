@@ -9,16 +9,11 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:python"
+  ],
   "main": "./out/extension.js",
-  "contributes": {
-    "commands": [
-      {
-        "command": "opencv-doc.helloWorld",
-        "title": "Hello World"
-      }
-    ]
-  },
+  "contributes": {},
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
