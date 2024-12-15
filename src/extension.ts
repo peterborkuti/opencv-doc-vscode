@@ -73,7 +73,6 @@ export function activate(context: vscode.ExtensionContext) {
 			return null;
 		}
 
-
 		const oldPanelWord = panelWord;
 		panelWord = hoveredWord;
 

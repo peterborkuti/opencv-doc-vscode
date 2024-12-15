@@ -13,16 +13,17 @@
   "activationEvents": [
     "onLanguage:python"
   ],
-  "main": "./out/extension.js",
+  "main": "./out-obfuscated/extension.js",
   "contributes": {},
   "scripts": {
-    "vscode:prepublish": "npm run compile && npm run copy-files",
+    "vscode:prepublish": "npm run compile && npm run obfuscate && npm run copy-files",
     "compile": "tsc -p ./ && npm run copy-files",
+    "obfuscate": "javascript-obfuscator out --output out-obfuscated",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
     "test": "vscode-test",
-    "copy-files": "cp ./index.csv ./out/"
+    "copy-files": "cp ./index.csv ./out-obfuscated/"
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
@@ -38,5 +39,10 @@
   },
   "dependencies": {
     "node-fetch": "^3.3.2"
+  },
+  "license": "Proprietary",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peterborkuti/opencv-doc-vscode.git"
   }
 }
