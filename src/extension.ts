@@ -1,7 +1,6 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
-import * as https from 'https';
 
 import * as fs from 'fs';
 import * as path from 'path';
@@ -34,28 +33,17 @@ function createMapFromFile(filePath: string): Map<string, string> {
 	return convertCommaSeparatedStringsToMap(lines);
 }
 
+const map = createMapFromFile(path.join(__dirname, 'index.csv'));
+
+let panel: vscode.WebviewPanel | undefined = undefined;
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	const map = createMapFromFile(path.join(__dirname, 'index.csv'));
 	const DOC_URL = 'https://docs.opencv.org/4.10.0/';
-	let panel: vscode.WebviewPanel | undefined = undefined;
 	let panelWord: string = "";
 
 	console.log('OpenCVDoc activated. Index contains ' + map.size + ' entries.');
-
-	function createOrFillInWindowWithContent(content: string) {
-		if (!panel) {
-			console.log('Creating new panel');
-			panel = vscode.window.createWebviewPanel(
-				'opencvdoc',
-				'OpenCV Documentation',
-				vscode.ViewColumn.One,
-				{});
-		}
-		console.log('Filling in panel with content');
-		panel.webview.html = content;
-	}
 
 	function createOrFillInWindowWithUrl(url: string) {
 		if (!panel) {
@@ -68,6 +56,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		console.log('Filling in panel by url');
 		panel.webview.html = getWebviewContent(url);
+		panel.onDidDispose(() => {
+			panel = undefined;
+			panelWord = "";
+		});
 	}
 
 	function getIndex(document: vscode.TextDocument, position: vscode.Position): string|null {
@@ -97,13 +89,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 			const url = DOC_URL + index;
 
-			/*
-			const htmlFetched = fetchHTML(url).then(content => {
-				createOrFillInWindowWithContent(content);
-
-				return null;
-			});
-			*/
 			createOrFillInWindowWithUrl(url);
 
 		  return null;
@@ -112,6 +97,12 @@ export function activate(context: vscode.ExtensionContext) {
 	});
 
 	context.subscriptions.push(displayHtmlInWindow);
+
+	return {
+		getMapSize : () => map.size,
+		getPanel: () => panel,
+		getPanelWord: () => panelWord
+	};
 
 }
 
@@ -141,19 +132,9 @@ function getWebviewContent(url: string): string {
 	`;
 }
 
-function fetchHTML(url: string): Promise<string> {
-    return new Promise((resolve, reject) => {
-        https.get(url, res => {
-            let data = '';
-            res.on('data',
-				chunk => {
-					data += chunk;
-			});
-            res.on('end', () => {
-				return resolve(data);
-			});
-        }).on('error', err => reject(err));
-    });
-}
 
-export function deactivate() {}
+export function deactivate() {
+	if (panel) {
+		panel.dispose();
+	}
+}

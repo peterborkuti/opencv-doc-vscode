@@ -1,8 +1,9 @@
 {
-  "name": "opencv-doc",
-  "displayName": "opencv-doc",
+  "name": "opencvdoc",
+  "displayName": "OpenCV doc", 
   "description": "Online documentation for opencv python commands",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "publisher": "borkutip",
   "engines": {
     "vscode": "^1.95.0"
   },
